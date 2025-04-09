@@ -33,14 +33,13 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// Hash function using Scrypt (simplified for frontend usage)
 function hashNote(note) {
   return new Promise((resolve, reject) => {
-    const salt = "random_salt"; // In a real-world scenario, use a secure salt
-    const key = "your_base64_signer_key"; // Your key, preferably base64 encoded
-    const crypto = window.crypto || window.msCrypto; // Browser-compatible crypto API
+    const salt = "random_salt"; 
+    const key = "your_base64_signer_key"; 
+    const crypto = window.crypto || window.msCrypto; 
     const encoder = new TextEncoder();
-    const data = encoder.encode(note + salt); // Concatenate note and salt
+    const data = encoder.encode(note + salt); 
 
     crypto.subtle.importKey("raw", encoder.encode(key), { name: "PBKDF2" }, false, ["deriveKey"])
       .then(secretKey => {
@@ -72,7 +71,7 @@ addBtn.addEventListener("click", () => {
     if (user) {
       const userId = user.uid;
 
-      // Hash the note before saving to Firebase
+      
       hashNote(note).then(hashedNote => {
         const newNoteRef = database.ref("users/" + userId + "/notes").push();
         newNoteRef.set({ title, note: hashedNote });

@@ -138,6 +138,13 @@
 </head>
 
 <body>
+ <div id="login-section" class="container text-center my-5">
+  <h2>Please log in with your Google account</h2>
+  <button onclick="signInWithGoogle()" class="btn btn-primary mt-3">Sign in with Google</button>
+</div>
+
+<!-- 📋 Main App Content (hidden by default) -->
+<div id="main-content" style="display: none;">
   <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
       <a class="navbar-brand">Created by J</a>
@@ -148,7 +155,7 @@
     </div>
   </nav>
 
-  <div class="container my-3 ">
+  <div id="main-content" class="container my-3" style="display: none;">
     <h1>Welcome to Random Messages.</h1>
 
     <div class="card m-3">
@@ -169,7 +176,7 @@
         </div>
       </div>
       <hr>
-      <h1>MESSAGES</h1>
+      <h1>Your Notes</h1>
       <hr>
       <div id="notes" class="row container-fluid">
       </div>
@@ -182,25 +189,23 @@
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
 <script>
-  // Firebase configuration
   const firebaseConfig = {
-    apiKey: "AIzaSyCvMh8fbzzsEkub0x03Mvk9-ftBfBJIXKE",
-    authDomain: "random-messages-5d43d.firebaseapp.com",
-    projectId: "random-messages-5d43d",
-    storageBucket: "random-messages-5d43d.firebasestorage.app",
-    messagingSenderId: "822421432983",
-    appId: "1:822421432983:web:23c3365a440d84236557d2",
-    measurementId: "G-VWLELXJ76C"
-  };
-  
+  apiKey: "AIzaSyCvMh8fbzzsEkub0x03Mvk9-ftBfBJIXKE",
+  authDomain: "random-messages-5d43d.firebaseapp.com",
+  projectId: "random-messages-5d43d",
+  storageBucket: "random-messages-5d43d.firebasestorage.app",
+  messagingSenderId: "822421432983",
+  appId: "1:822421432983:web:23c3365a440d84236557d2",
+  measurementId: "G-VWLELXJ76C"
+};
+
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 </script>
-
-<!-- Your custom app script -->
-<script src="main.js"></script>
+<script src="app.js"></script>
 </body>
 
 </html>

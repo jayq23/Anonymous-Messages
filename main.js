@@ -7,6 +7,7 @@ const notesContainer = document.getElementById("notes");
 const auth = firebase.auth();
 const database = firebase.database();
 
+// Sign In with Google
 function signInWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
@@ -20,6 +21,7 @@ function signInWithGoogle() {
     });
 }
 
+// Auth State Changed - Loading User-Specific Notes
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById("login-section").style.display = "none";
@@ -31,32 +33,107 @@ auth.onAuthStateChanged(user => {
   }
 });
 
+// Hash function using Scrypt (simplified for frontend usage)
+function hashNote(note) {
+  return new Promise((resolve, reject) => {
+    const salt = "random_salt"; // In a real-world scenario, use a secure salt
+    const key = "your_base64_signer_key"; // Your key, preferably base64 encoded
+    const crypto = window.crypto || window.msCrypto; // Browser-compatible crypto API
+    const encoder = new TextEncoder();
+    const data = encoder.encode(note + salt); // Concatenate note and salt
+
+    crypto.subtle.importKey("raw", encoder.encode(key), { name: "PBKDF2" }, false, ["deriveKey"])
+      .then(secretKey => {
+        return crypto.subtle.deriveKey(
+          { name: "PBKDF2", salt: data, iterations: 100000, hash: "SHA-256" },
+          secretKey,
+          { name: "HMAC", hash: "SHA-256", length: 256 },
+          false,
+          ["sign"]
+        );
+      })
+      .then(key => {
+        return crypto.subtle.exportKey("raw", key);
+      })
+      .then(exportedKey => {
+        resolve(new TextDecoder().decode(exportedKey));
+      })
+      .catch(reject);
+  });
+}
+
 // Save note on click
 addBtn.addEventListener("click", () => {
   const title = titleTxt.value.trim();
   const note = addTxt.value.trim();
 
   if (title || note) {
-    const newNoteRef = database.ref("notes").push();
-    newNoteRef.set({ title, note });
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const userId = user.uid;
 
-    titleTxt.value = "";
-    addTxt.value = "";
+      // Hash the note before saving to Firebase
+      hashNote(note).then(hashedNote => {
+        const newNoteRef = database.ref("users/" + userId + "/notes").push();
+        newNoteRef.set({ title, note: hashedNote });
+
+        titleTxt.value = "";
+        addTxt.value = "";
+      }).catch(error => {
+        console.error("Error hashing note:", error);
+      });
+    }
   }
 });
 
 // Load notes from DB
-database.ref("notes").on("value", snapshot => {
-  notesContainer.innerHTML = "";
-  snapshot.forEach(childSnap => {
-    const { title, note } = childSnap.val();
-    const card = document.createElement("div");
-    card.className = "card col-md-3 m-8 p-2";
-    card.innerHTML = `
-      <div class="card-body">
-        <h5 class="card-title">${title || "No Title"}</h5>
-        <p class="card-text">${note}</p>
-      </div>`;
-    notesContainer.appendChild(card);
+function loadNotes() {
+  const user = firebase.auth().currentUser;
+  
+  if (user) {
+    const userId = user.uid;
+
+    // Try to load notes from the user's notes path
+    database.ref("users/" + userId + "/notes").on("value", snapshot => {
+      notesContainer.innerHTML = "";
+      
+      if (snapshot.exists()) {
+        snapshot.forEach(childSnap => {
+          const { title, note } = childSnap.val();
+          const card = document.createElement("div");
+          card.className = "card col-md-3 m-8 p-2";
+          card.innerHTML = `
+            <div class="card-body">
+              <h5 class="card-title">${title || "No Title"}</h5>
+              <p class="card-text">${note}</p>
+            </div>`;
+          notesContainer.appendChild(card);
+        });
+      } else {
+        // If no notes exist under the user, load from the old 'notes' path
+        loadOldNotes();
+      }
+    });
+  } else {
+    // If no user is signed in, load notes from the old 'notes' path
+    loadOldNotes();
+  }
+}
+
+// Load old notes from the 'notes' path
+function loadOldNotes() {
+  database.ref("notes").on("value", snapshot => {
+    notesContainer.innerHTML = "";
+    snapshot.forEach(childSnap => {
+      const { title, note } = childSnap.val();
+      const card = document.createElement("div");
+      card.className = "card col-md-3 m-8 p-2";
+      card.innerHTML = `
+        <div class="card-body">
+          <h5 class="card-title">${title || "No Title"}</h5>
+          <p class="card-text">${note}</p>
+        </div>`;
+      notesContainer.appendChild(card);
+    });
   });
-});
+}

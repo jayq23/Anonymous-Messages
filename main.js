@@ -4,7 +4,32 @@ const addTxt = document.getElementById("addTxt");
 const notesContainer = document.getElementById("notes");
 
 // Firebase DB reference
+const auth = firebase.auth();
 const database = firebase.database();
+
+function signInWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then((result) => {
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("main-content").style.display = "block";
+      loadNotes(); // Only load notes after login
+    })
+    .catch((error) => {
+      alert("Login failed: " + error.message);
+    });
+}
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("main-content").style.display = "block";
+    loadNotes(); // Load notes if already signed in
+  } else {
+    document.getElementById("login-section").style.display = "block";
+    document.getElementById("main-content").style.display = "none";
+  }
+});
 
 // Save note on click
 addBtn.addEventListener("click", () => {

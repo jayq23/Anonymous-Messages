@@ -71,16 +71,12 @@ addBtn.addEventListener("click", () => {
     if (user) {
       const userId = user.uid;
 
-      
-      hashNote(note).then(hashedNote => {
-        const newNoteRef = database.ref("users/" + userId + "/notes").push();
-        newNoteRef.set({ title, note: hashedNote });
+      // Save plain text instead of hashed note for now
+      const newNoteRef = database.ref("users/" + userId + "/notes").push();
+      newNoteRef.set({ title, note });
 
-        titleTxt.value = "";
-        addTxt.value = "";
-      }).catch(error => {
-        console.error("Error hashing note:", error);
-      });
+      titleTxt.value = "";
+      addTxt.value = "";
     }
   }
 });

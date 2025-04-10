@@ -124,6 +124,49 @@
       animation: fadeIn 0.5s ease-out forwards;
     }
     
+    /* New styles for replies */
+    .replies-title {
+      color: var(--primary-color);
+      font-weight: 600;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+    
+    .replies-container {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .reply {
+      background-color: var(--light-bg);
+      border-left: 3px solid var(--secondary-color);
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    
+    .reply p {
+      margin-bottom: 4px;
+    }
+    
+    .reply-form {
+      margin-top: 12px;
+    }
+    
+    .reply-input {
+      border-radius: 20px 0 0 20px;
+      font-size: 0.9rem;
+      padding: 8px 15px;
+    }
+    
+    .reply-btn {
+      border-radius: 0 20px 20px 0;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .container {
@@ -132,6 +175,15 @@
       
       .card {
         margin: 1rem 0;
+      }
+      
+      .reply-form .input-group {
+        flex-direction: column;
+      }
+      
+      .reply-input, .reply-btn {
+        border-radius: 20px;
+        margin-bottom: 5px;
       }
     }
   </style>
@@ -157,11 +209,10 @@
         <div class="mb-3">
           <textarea class="form-control" id="titleTxt" rows="1"></textarea>
         </div>
-        <!-- <a class="btn btn-primary" id="addBtn">Save</a> -->
       </div>
       <div class="card m-3">
         <div class="card-body">
-          <h5 class="card-title">Add a Message</h5>
+          <h5 class="card-title">Add a Note</h5>
           <div class="mb-3">
             <textarea class="form-control" id="addTxt" rows="3"></textarea>
           </div>
@@ -172,32 +223,33 @@
       <h1>MESSAGES</h1>
       <hr>
       <div id="notes" class="row container-fluid">
+        <!-- Notes will be dynamically inserted here by JavaScript -->
       </div>
     </div>
+  </div>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvMh8fbzzsEkub0x03Mvk9-ftBfBJIXKE",
+      authDomain: "random-messages-5d43d.firebaseapp.com",
+      projectId: "random-messages-5d43d",
+      storageBucket: "random-messages-5d43d.firebasestorage.app",
+      messagingSenderId: "822421432983",
+      appId: "1:822421432983:web:23c3365a440d84236557d2",
+      measurementId: "G-VWLELXJ76C"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
 
-<script>
-  // Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyCvMh8fbzzsEkub0x03Mvk9-ftBfBJIXKE",
-    authDomain: "random-messages-5d43d.firebaseapp.com",
-    projectId: "random-messages-5d43d",
-    storageBucket: "random-messages-5d43d.firebasestorage.app",
-    messagingSenderId: "822421432983",
-    appId: "1:822421432983:web:23c3365a440d84236557d2",
-    measurementId: "G-VWLELXJ76C"
-  };
-  
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-</script>
-
-<!-- Your custom app script -->
-<script src="main.js"></script>
+  <!-- Your custom app script -->
+  <script src="main.js"></script>
 </body>
 
 </html>
